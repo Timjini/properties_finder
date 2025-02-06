@@ -1,0 +1,29 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  offer_type: MyString
+  property_type: MyString
+  zip_code: MyString
+  city: MyString
+  street: MyString
+  house_number: MyString
+  lng: 9.99
+  lat: 9.99
+  construction_year: 1
+  number_of_rooms: 9.99
+  currency: MyString
+  price: 9.99
+
+two:
+  offer_type: MyString
+  property_type: MyString
+  zip_code: MyString
+  city: MyString
+  street: MyString
+  house_number: MyString
+  lng: 9.99
+  lat: 9.99
+  construction_year: 1
+  number_of_rooms: 9.99
+  currency: MyString
+  price: 9.99

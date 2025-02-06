@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: ${PROPERTIES_API_CONTAINER}
+    entrypoint: ["/usr/src/app/entrypoint.sh"]
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - "3000:3000"
+    env_file: .env
+    environment:
+      DATABASE_URL: postgres://${PSQL_USER}:${PSQL_PASSWORD}@postgres:5432/${PSQL_DATABASE}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  postgres:
+    container_name: ${PSQL_DB_HOST}
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: ${PSQL_DATABASE}
+      POSTGRES_USER: ${PSQL_USER}
+      POSTGRES_PASSWORD: ${PSQL_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${PSQL_USER}", "-d", "${PSQL_DATABASE}"]
+      interval: 10s
+      retries: 5
+    networks:
+      - app-network
+
+  pgadmin:
+    container_name: ${PGADMIN_HOST}
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
+    ports:
+      - "5050:80"
+    networks:
+      - app-network
+
+volumes:
+  postgres_data:
+
+networks:
+  app-network:
