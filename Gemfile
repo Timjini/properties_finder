@@ -10,7 +10,7 @@ gem "puma", ">= 5.0"
 # gem "jbuilder"
 # Use Redis adapter to run Action Cable in production
 # gem "redis", ">= 4.0.1"
-gem 'serializer', '~> 1.0', '>= 1.0.2'
+gem "serializer", "~> 1.0", ">= 1.0.2"
 
 # Use Kredis to get higher-level data types in Redis [https://github.com/rails/kredis]
 # gem "kredis"
@@ -40,7 +40,5 @@ group :development, :test do
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
 
-  gem 'rspec-rails'
+  gem "rspec-rails"
 end
-
-
