@@ -14,7 +14,6 @@ RSpec.describe PropertiesController, type: :controller do
 
       it "returns a successful response when properties are found" do
         properties = [ double('Property', id: 1, name: "Property 1") ]
-        byebug
         allow(PropertyService).to receive(:new).and_return(double(call: properties))
 
         get :index, params: valid_params

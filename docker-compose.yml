@@ -13,30 +13,26 @@ services:
     environment:
       RAILS_ENV: ${RAILS_ENV}
       DATABASE_URL: postgres://${PSQL_USER}:${PSQL_PASSWORD}@postgres:5432/${PSQL_DATABASE}
-      REDIS_URL: redis://redis:6379/0
     depends_on:
       postgres:
         condition: service_healthy
-      redis:
-        condition: service_started
     networks:
       - app-network
 
   sidekiq:
     build: .
-    container_name: sidekiq
-    command: bundle exec sidekiq
+    command: bundle exec sidekiq -C config/sidekiq.yml
     volumes:
       - .:/usr/src/app
-    depends_on:
-      - app
-      - redis
     environment:
-      RAILS_ENV: ${RAILS_ENV}
       DATABASE_URL: postgres://${PSQL_USER}:${PSQL_PASSWORD}@postgres:5432/${PSQL_DATABASE}
       REDIS_URL: redis://redis:6379/0
+    depends_on:
+      - postgres
+      - redis
     networks:
       - app-network
+
 
   redis:
     image: redis:latest

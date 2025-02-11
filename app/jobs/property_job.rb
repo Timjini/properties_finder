@@ -2,15 +2,16 @@ class PropertyJob
   include Sidekiq::Job
 
   def perform(lng, lat, offer_type, property_type, radius = 5000)
-    properties = PropertyService.new(lng, lat, offer_type, property_type, radius).call
+    property_service = PropertyService.new(lng, lat, offer_type, property_type)
+    properties = property_service.call
 
-    if properties.present?
-      Rails.logger.info "Found #{properties.count} properties."
-    else
-      Rails.logger.warn "No properties found matching the criteria."
-    end
+    cache_key = jid
+    Rails.logger.info "Storing data in Redis with key: #{cache_key}"
 
-    properties
+    Redis.current.setex(cache_key, 1.hour, properties.to_json)
+
+    stored_data = Redis.current.get(cache_key)
+    Rails.logger.info "Stored data check: #{stored_data ? 'Data exists' : 'Data is missing'}"
   rescue StandardError => e
     Rails.logger.error "PropertyJob error: #{e.message}"
   end

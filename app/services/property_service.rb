@@ -13,10 +13,10 @@ class PropertyService
     cache_data = Redis.current.get(cache_key)
 
     if cache_data
-      Marshal.load(cache_data)
+      JSON.parse(cache_data, symbolize_names: true)
     else
-      properties = fetch_properties_from_db
-      Redis.current.setex(cache_key, 1.hour, Marshal.dump(properties))
+      properties = fetch_properties_from_db.as_json
+      Redis.current.setex(cache_key, 1.hour, properties.to_json)
       properties
     end
   end
@@ -24,7 +24,7 @@ class PropertyService
   private
 
   def generate_cache_key
-    Digest::SHA256.hexdigest("#{offer_type}/#{property_type}/#{lat}/#{lng}/#{radius}")
+    Digest::SHA256.hexdigest("#{@offer_type}/#{@property_type}/#{@lat}/#{@lng}/#{@radius}")
   end
 
   def fetch_properties_from_db
