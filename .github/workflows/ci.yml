@@ -45,9 +45,9 @@ jobs:
           echo "  encoding: unicode" >> config/database.yml
           echo "  pool: 5" >> config/database.yml
           echo "  host: postgres" >> config/database.yml
-          echo "  username: ${POSTGRES_USER}" >> config/database.yml
-          echo "  password: ${POSTGRES_PASSWORD}" >> config/database.yml
-          echo "  database: ${POSTGRES_DB}" >> config/database.yml
+          echo "  username: ${PSQL_USER}" >> config/database.yml
+          echo "  password: ${PSQL_PASSWORD}" >> config/database.yml
+          echo "  database: ${PSQL_DATABASE}" >> config/database.yml
 
       - name: Install dependencies
         run: |

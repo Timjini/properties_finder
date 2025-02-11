@@ -9,10 +9,6 @@ class PropertyService
 
   def call
     begin
-    # Property
-    #   .select(:id, :street, :house_number, :city, :zip_code, :price, :lat, :lng, :offer_type, :property_type)
-    #   .where(offer_type: @offer_type, property_type: @property_type)
-    #   .within_selected_radius(@lat, @lng, @radius)
     Property
         .where(offer_type: @offer_type, property_type: @property_type)
         .within_selected_radius(@lat, @lng, @radius)
