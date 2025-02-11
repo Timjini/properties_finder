@@ -1,3 +1,13 @@
+name: properties_finder Job
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -12,9 +22,10 @@ jobs:
       postgres:
         image: postgres:latest
         env:
-          POSTGRES_DB: ${{ secrets.PSQL_DATABASE }}  
+          POSTGRES_DB: ${{ secrets.PSQL_DATABASE }}
           POSTGRES_USER: ${{ secrets.PSQL_USER }}
           POSTGRES_PASSWORD: ${{ secrets.PSQL_PASSWORD }}
+          PGHOST: localhost
         ports:
           - 5432:5432
         options: --health-cmd="pg_isready -U $POSTGRES_USER" --health-timeout=30s --health-retries=5
@@ -33,6 +44,13 @@ jobs:
           gem install bundler
           bundle install
 
+      - name: Debug environment variables
+        run: |
+          echo "PSQL_DB_HOST: $PSQL_DB_HOST"
+          echo "PSQL_DATABASE: $PSQL_DATABASE"
+          echo "PSQL_USER: $PSQL_USER"
+          echo "PSQL_PASSWORD: $PSQL_PASSWORD"
+
       - name: Set up database
         run: |
           echo "development:" > config/database.yml
@@ -43,6 +61,7 @@ jobs:
           echo "  username: ${PSQL_USER}" >> config/database.yml
           echo "  password: ${PSQL_PASSWORD}" >> config/database.yml
           echo "  database: ${PSQL_DATABASE}" >> config/database.yml
+          cat config/database.yml  # Debugging step to check the generated database.yml
 
       - name: Install dependencies
         run: |
