@@ -54,27 +54,6 @@ jobs:
           gem install bundler
           bundle install
 
-      - name: Set up database configuration
-        run: |
-          cat > config/database.yml <<EOL
-          development:
-            adapter: postgresql
-            encoding: unicode
-            pool: 5
-            host: ${PSQL_DB_HOST}
-            username: ${PSQL_USER}
-            password: ${PSQL_PASSWORD}
-            database: ${PSQL_DATABASE}
-          EOL
-
-      - name: Wait for PostgreSQL to be ready
-        run: |
-          for i in {1..30}; do
-            pg_isready -h postgres -U ${PSQL_USER} && break
-            echo "Waiting for PostgreSQL..."
-            sleep 2
-          done
-
       - name: Set up the database
         run: |
           bundle exec rake db:create db:migrate
