@@ -21,18 +21,18 @@ default: &default
 
 
 # development:
-#   adapter: postgresql
-#   encoding: unicode
-#   pool: 5
-#   host: 172.21.0.1
-#   port: 5432
-#   username: postgres
-#   password: postgres
-#   database: postgres
+#    <<: *default
+#    database: properties_finder_development
 
 development:
-   <<: *default
-   database: properties_finder_development
+  adapter: postgresql
+  encoding: unicode
+  pool: 5
+  host: <%= ENV['PSQL_DB_HOST'] %>
+  username: <%= ENV['PSQL_USER'] %>
+  password: <%= ENV['PSQL_PASSWORD'] %>
+  database: <%= ENV['PSQL_DATABASE'] %>
+
 
   # The specified database role being used to connect to PostgreSQL.
   # To create additional roles in PostgreSQL see `$ createuser --help`.
