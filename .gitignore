@@ -33,3 +33,9 @@
 /config/master.key
 
 /properties.sql
+
+node_modules
+
+*.log
+*.md
+*.env

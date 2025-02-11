@@ -17,7 +17,7 @@ class Property < ApplicationRecord
   # validates :marketing_type, inclusion: { in: %w[rent sell] }
 
   # using ll_to_earth
-  scope :within_radius, ->(lat, lng, offer_type, property_type, radius = 5000) {
+  scope :within_selected_radius, ->(lat, lng, offer_type, property_type, radius = 5000) {
     select(:id, :street, :house_number, :city, :zip_code, :price, :lat, :lng)
       .where(offer_type: offer_type, property_type: property_type)
       .where(

@@ -3,6 +3,7 @@
     "husky": "^8.0.0"
   },
   "scripts": {
+    "test": "bundle exec rubocop && bundle exec rspec",
     "prepare": "husky install"
   }
 }

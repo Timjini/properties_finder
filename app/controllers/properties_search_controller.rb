@@ -1,13 +1,17 @@
-class PropertiesSeachController < ApplicationController
+class PropertiesSearchController < ApplicationController
   def index
     properties = PropertySearchService.new(
       params[:lng].to_f,
       params[:lat].to_f,
-      params[:offer_type],
-      params[:property_type],
+      params[:marketing_type],
+      params[:property_type]
     ).call
 
-    render json: properties
+      render json: {
+        status: "success",
+        message: "Properties successfully retrieved.",
+        properties: ActiveModelSerializers::SerializableResource.new(properties, each_serializer: PropertiesSearchSerializer)
+      }, status: :ok
   end
 
   private

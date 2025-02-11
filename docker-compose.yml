@@ -11,6 +11,7 @@ services:
       - "3000:3000"
     env_file: .env
     environment:
+      RAILS_ENV: ${RAILS_ENV}
       DATABASE_URL: postgres://${PSQL_USER}:${PSQL_PASSWORD}@postgres:5432/${PSQL_DATABASE}
     depends_on:
       postgres:

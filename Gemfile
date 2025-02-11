@@ -10,7 +10,9 @@ gem "puma", ">= 5.0"
 # gem "jbuilder"
 # Use Redis adapter to run Action Cable in production
 # gem "redis", ">= 4.0.1"
-gem "serializer", "~> 1.0", ">= 1.0.2"
+gem "active_model_serializers"
+
+gem "geocoder", "~> 1.3", ">= 1.3.7"
 
 # Use Kredis to get higher-level data types in Redis [https://github.com/rails/kredis]
 # gem "kredis"
@@ -42,3 +44,5 @@ group :development, :test do
 
   gem "rspec-rails"
 end
+
+gem "byebug", group: :development

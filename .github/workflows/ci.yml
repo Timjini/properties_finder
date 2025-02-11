@@ -1,11 +1,9 @@
-name: CI/CD Pipeline
+name: Ruby on Rails CI/CD Pipeline
 
 on:
   push:
     branches:
       - main
-      - 'feature/*'
-      - 'bugfix/*'
   pull_request:
     branches:
       - main
@@ -17,36 +15,52 @@ jobs:
     services:
       postgres:
         image: postgres:latest
+        env:
+          POSTGRES_DB: ${{ secrets.PSQL_DATABASE }}  
+          POSTGRES_USER: ${{ secrets.PSQL_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.PSQL_PASSWORD }}
         ports:
           - 5432:5432
-        env:
-          POSTGRES_USER: user
-          POSTGRES_PASSWORD: password
-          POSTGRES_DB: myapp_test
-        options: --health-cmd "pg_isready" --health-interval 10s --health-timeout 5s --health-retries 5
+        options: --health-cmd="pg_isready -U $POSTGRES_USER" --health-timeout=30s --health-retries=5
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Check out code
+        uses: actions/checkout@v2
 
-    - name: Set up Ruby
-      uses: ruby/setup-ruby@v1
-      with:
-        ruby-version: 3.1.2
-        bundler-cache: true
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.1.2'
 
-    - name: Install dependencies
-      run: |
-        gem install bundler
-        bundle install --jobs 4 --retry 3
+      - name: Set up bundler
+        run: |
+          gem install bundler
+          bundle install
 
-    - name: Set up database
-      run: |
-        cp config/database.yml.github config/database.yml
-        bundle exec rake db:create db:migrate
+      - name: Set up database
+        run: |
+          # Dynamically generate the database.yml file
+          echo "development:" > config/database.yml
+          echo "  adapter: postgresql" >> config/database.yml
+          echo "  encoding: unicode" >> config/database.yml
+          echo "  pool: 5" >> config/database.yml
+          echo "  host: postgres" >> config/database.yml
+          echo "  username: ${POSTGRES_USER}" >> config/database.yml
+          echo "  password: ${POSTGRES_PASSWORD}" >> config/database.yml
+          echo "  database: ${POSTGRES_DB}" >> config/database.yml
 
-    - name: Run RSpec tests
-      run: bundle exec rspec --format documentation
+      - name: Install dependencies
+        run: |
+          bundle install
 
-    - name: Run Rubocop
-      run: bundle exec rubocop --fail-level A
+      - name: Set up the database
+        run: |
+          bundle exec rake db:create db:migrate
+
+      - name: Run tests with RSpec
+        run: |
+          bundle exec rspec
+          
+      - name: Run Rubocop
+        run: |
+          bundle exec rubocop
