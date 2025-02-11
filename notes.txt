@@ -1,0 +1,20 @@
+- steps to improve the query  
+-- using FastJson
+-- running select and where before calculating the radius
+-- creating an index for offer_type, property_type, lat, lng
+   : CREATE INDEX idx_properties_offer_type_property_type_lat_lng ON properties (offer_type, property_type, lat, lng);
+
+optional
+-- using Rails cache for 10mins 
+
+
+- SQL query 
+
+SELECT id,street, house_number, city, zip_code, price,lat,lng
+FROM properties
+WHERE offer_type = ?
+  AND property_type = ?
+  AND earth_distance(
+        ll_to_earth(lat::double precision, lng::double precision),
+        ll_to_earth(?::double precision, ?::double precision)
+      ) <= ?
