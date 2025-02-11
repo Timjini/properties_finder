@@ -1,46 +1,46 @@
-name: Ruby on Rails CI/CD Pipeline
+# name: Ruby on Rails CI/CD Pipeline
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+# on:
+#   push:
+#     branches:
+#       - main
+#   pull_request:
+#     branches:
+#       - main
 
-jobs:
-  test:
-    runs-on: ubuntu-latest
+# jobs:
+#   test:
+#     runs-on: ubuntu-latest
     
-    env:
-      PSQL_DB_HOST: ${{ secrets.PSQL_DB_HOST }}
-      PSQL_DATABASE: ${{ secrets.PSQL_DATABASE }}
-      PSQL_USER: ${{ secrets.PSQL_USER }}
-      PSQL_PASSWORD: ${{ secrets.PSQL_PASSWORD }}
+#     env:
+#       PSQL_DB_HOST: ${{ secrets.PSQL_DB_HOST }}
+#       PSQL_DATABASE: ${{ secrets.PSQL_DATABASE }}
+#       PSQL_USER: ${{ secrets.PSQL_USER }}
+#       PSQL_PASSWORD: ${{ secrets.PSQL_PASSWORD }}
 
-    services:
-      postgres:
-        image: postgres:latest
-        env:
-          POSTGRES_DB: ${{ secrets.PSQL_DATABASE }}  
-          POSTGRES_USER: ${{ secrets.PSQL_USER }}
-          POSTGRES_PASSWORD: ${{ secrets.PSQL_PASSWORD || 'default_pass' }}
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd="pg_isready -U postgres"
-          --health-interval=5s
-          --health-timeout=10s
-          --health-retries=10
+#     services:
+#       postgres:
+#         image: postgres:latest
+#         env:
+#           POSTGRES_DB: ${{ secrets.PSQL_DATABASE }}  
+#           POSTGRES_USER: ${{ secrets.PSQL_USER }}
+#           POSTGRES_PASSWORD: ${{ secrets.PSQL_PASSWORD || 'default_pass' }}
+#         ports:
+#           - 5432:5432
+#         options: >-
+#           --health-cmd="pg_isready -U postgres"
+#           --health-interval=5s
+#           --health-timeout=10s
+#           --health-retries=10
 
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v4
+#     steps:
+#       - name: Check out code
+#         uses: actions/checkout@v4
 
-      - name: Debug Environment Variables
-        run: |
-          echo "PSQL_DB_HOST=${{ secrets.PSQL_DB_HOST }}"
-          echo "PSQL_DATABASE=${{ secrets.PSQL_DATABASE }}"
-          echo "PSQL_USER=${{ secrets.PSQL_USER }}"
-          echo "PSQL_PASSWORD=${{ secrets.PSQL_PASSWORD }}"
+#       - name: Debug Environment Variables
+#         run: |
+#           echo "PSQL_DB_HOST=${{ secrets.PSQL_DB_HOST }}"
+#           echo "PSQL_DATABASE=${{ secrets.PSQL_DATABASE }}"
+#           echo "PSQL_USER=${{ secrets.PSQL_USER }}"
+#           echo "PSQL_PASSWORD=${{ secrets.PSQL_PASSWORD }}"
 
