@@ -39,3 +39,4 @@ node_modules
 *.log
 *.md
 *.env
+.byebug_history

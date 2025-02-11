@@ -1,20 +1,16 @@
 class Property < ApplicationRecord
-  # These adjustments were not in the task and might not be used ?
   # require fileds on creation
-  validates :zip_code, :city, :lat, :lng, :property_type, :marketing_type, :price, presence: true
+  alias_attribute :marketing_type, :offer_type
 
-  # validate numerical fields
+  # validate query fields
   validates :lat, numericality: { greater_than_or_equal_to: -90, less_than_or_equal_to: 90 }
   validates :lng, numericality: { greater_than_or_equal_to: -180, less_than_or_equal_to: 180 }
-  validates :construction_year, numericality: { only_integer: true, greater_than: 1800 }, allow_nil: true
-  validates :number_of_rooms, numericality: { greater_than: 0 }, allow_nil: true
-  validates :price, numericality: { greater_than: 0 }
 
   # # validate the type enum
-  # validates :property_type, inclusion: { in: %w[apartment single_family_house] }
-
+  validates :property_type, inclusion: { in: %w[mid_terrace_house apartment_maisonette apartment semi_detached_house
+                                                villa end_terrace_house penthouse multi_family_house single_family_house apartment_roof_storey] }
   # # validate marketing enum
-  # validates :marketing_type, inclusion: { in: %w[rent sell] }
+  validates :offer_type, inclusion: { in: %w[rent sell] }
 
   # using ll_to_earth
   scope :within_selected_radius, ->(lat, lng, offer_type, property_type, radius = 5000) {
@@ -28,14 +24,17 @@ class Property < ApplicationRecord
       )
   }
 
-  # validate fileds before saving
-  before_save :normalize_strings
+  # scope :within_selected_radius, ->(lat, lng, radius) {
+  #   where(
+  #     "earth_distance(
+  #       ll_to_earth(lat::double precision, lng::double precision),
+  #       ll_to_earth(?::double precision, ?::double precision)
+  #     ) <= ?", lat, lng, radius
+  #   )
+  # }
 
-  private
 
-  def normalize_strings
-    self.zip_code = zip_code.strip if zip_code.present?
-    self.city = city.strip.titleize if city.present?
-    self.street = street.strip.titleize if street.present?
+  def state
+    city
   end
 end

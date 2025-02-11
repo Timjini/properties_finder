@@ -12,22 +12,22 @@
 
 ActiveRecord::Schema[7.2].define(version: 2025_02_06_232222) do
   # These are extensions that must be enabled in order to support this database
+  enable_extension "cube"
+  enable_extension "earthdistance"
   enable_extension "plpgsql"
 
-  create_table "properties", force: :cascade do |t|
+  create_table "properties", id: :serial, force: :cascade do |t|
     t.string "offer_type"
     t.string "property_type"
-    t.string "zip_code"
-    t.string "city"
+    t.string "zip_code", null: false
+    t.string "city", null: false
     t.string "street"
     t.string "house_number"
-    t.decimal "lng"
-    t.decimal "lat"
+    t.decimal "lng", precision: 11, scale: 8
+    t.decimal "lat", precision: 11, scale: 8
     t.integer "construction_year"
-    t.decimal "number_of_rooms"
+    t.decimal "number_of_rooms", precision: 15, scale: 2
     t.string "currency"
-    t.decimal "price"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.decimal "price", precision: 15, scale: 2
   end
 end
