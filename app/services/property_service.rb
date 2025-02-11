@@ -9,13 +9,10 @@ class PropertyService
 
   def call
     begin
-      properties = Property
-      .within_selected_radius(@lat, @lng, @offer_type, @property_type, @radius)
-      .select(:street, :house_number, :city, :zip_code, :price)
-    # Property
-    #   .select(:street, :house_number, :city, :zip_code, :price)
-    #   .where(offer_type: @offer_type, property_type: @property_type)
-    #   .within_selected_radius(@lat, @lng, @radius)
+    Property
+      .select(:id, :street, :house_number, :city, :zip_code, :price, :lat, :lng, :offer_type, :property_type)
+      .where(offer_type: @offer_type, property_type: @property_type)
+      .within_selected_radius(@lat, @lng, @radius)
     rescue StandardError => e
       Rails.logger.error "Unexpected error: #{e.message}"
       raise StandardError, "An unexpected error occurred while retrieving properties"

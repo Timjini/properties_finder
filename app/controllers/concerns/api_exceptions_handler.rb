@@ -20,7 +20,7 @@ module ApiExceptionsHandler
   private
 
   def handle_record_not_found(exception)
-    render_error_response("Record not found for model: #{exception.model}, ID: #{exception.id}", 404)
+    render_error_response("Record not found for: #{exception.model}, ID: #{exception.id}", 404)
   end
 
   def handle_validation_error(exception)
@@ -32,7 +32,7 @@ module ApiExceptionsHandler
   end
 
   def handle_custom_error(exception)
-    render_error_response("Custom error: #{exception.message}", 403)
+    render_error_response("Opps something went wrong: #{exception.message}", 403)
   end
 
   def handle_standard_error(exception)

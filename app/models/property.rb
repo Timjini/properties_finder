@@ -12,26 +12,14 @@ class Property < ApplicationRecord
   # # validate marketing enum
   validates :offer_type, inclusion: { in: %w[rent sell] }
 
-  # using ll_to_earth
-  scope :within_selected_radius, ->(lat, lng, offer_type, property_type, radius = 5000) {
-    select(:id, :street, :house_number, :city, :zip_code, :price, :lat, :lng)
-      .where(offer_type: offer_type, property_type: property_type)
-      .where(
-        "earth_distance(
-          ll_to_earth(lat::double precision, lng::double precision),
-          ll_to_earth(?::double precision, ?::double precision)
-        ) <= ?", lat, lng, radius
-      )
+  scope :within_selected_radius, ->(lat, lng, radius) {
+    where(
+      "earth_distance(
+        ll_to_earth(lat::double precision, lng::double precision),
+        ll_to_earth(?::double precision, ?::double precision)
+      ) <= ?", lat, lng, radius
+    )
   }
-
-  # scope :within_selected_radius, ->(lat, lng, radius) {
-  #   where(
-  #     "earth_distance(
-  #       ll_to_earth(lat::double precision, lng::double precision),
-  #       ll_to_earth(?::double precision, ?::double precision)
-  #     ) <= ?", lat, lng, radius
-  #   )
-  # }
 
 
   def state
