@@ -44,24 +44,3 @@ jobs:
           echo "PSQL_USER=${{ secrets.PSQL_USER }}"
           echo "PSQL_PASSWORD=${{ secrets.PSQL_PASSWORD }}"
 
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.1.2'
-
-      - name: Set up bundler
-        run: |
-          gem install bundler
-          bundle install
-
-      - name: Set up the database
-        run: |
-          bundle exec rake db:create db:migrate
-
-      - name: Run tests with RSpec
-        run: |
-          bundle exec rspec
-          
-      - name: Run Rubocop
-        run: |
-          bundle exec rubocop

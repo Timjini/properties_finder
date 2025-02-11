@@ -39,7 +39,6 @@ RSpec.describe PropertiesController, type: :controller do
       end
 
       it "returns a not found response when no properties are found" do
-        # Mocking PropertyService to return an empty array (no properties found)
         allow(PropertyService).to receive(:new).and_return(double(call: []))
 
         get :index, params: valid_params

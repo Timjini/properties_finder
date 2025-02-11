@@ -7,14 +7,28 @@ class PropertyService
     @radius = radius.to_i
   end
 
+  # caching for scaling
   def call
-    begin
-    Property
-        .where(offer_type: @offer_type, property_type: @property_type)
-        .within_selected_radius(@lat, @lng, @radius)
-    rescue StandardError => e
-      Rails.logger.error "Unexpected error: #{e.message}"
-      raise StandardError, "An unexpected error occurred while retrieving properties"
+    cache_key = generate_cache_key
+    cache_data = Redis.current.get(cache_key)
+
+    if cache_data
+      Marshal.load(cache_data)
+    else
+      properties = fetch_properties_from_db
+      Redis.current.setex(cache_key, 1.hour, Marshal.dump(properties))
+      properties
     end
+  end
+
+  private
+
+  def generate_cache_key
+    Digest::SHA256.hexdigest("#{offer_type}/#{property_type}/#{lat}/#{lng}/#{radius}")
+  end
+
+  def fetch_properties_from_db
+    Property.where(offer_type: @offer_type, property_type: @property_type)
+            .within_selected_radius(@lat, @lng, @radius)
   end
 end
