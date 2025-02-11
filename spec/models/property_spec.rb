@@ -17,25 +17,23 @@ RSpec.describe Property, type: :model do
     end
 
     let!(:property3) do
-      # 10km away lat
+      # outside the radius
       Property.create(
-        lat: 12.5440963,
-        lng: 13.4238807,
-        property_type: "apartment", offer_type: "sell",
+        lat: 52.9343963, lng: 13.9237807, property_type: "apartment", offer_type: "sell",
         price: 80000, zip_code: "12345", city: "Berlin", street: "Main St", house_number: "3"
       )
     end
 
     it "returns properties within the selected radius" do
-      properties = Property.within_selected_radius(52.5342963, 13.4236807, "sell", "apartment", 5000)
-      puts "-------> result: #{properties.length}"
+      properties = Property.within_selected_radius(52.5342963, 13.4236807, 5000)
+      puts "-------> result: #{properties.first.inspect}"
       expect(properties).to include(property1)
       expect(properties).to include(property2)
       expect(properties).not_to include(property3)
     end
 
     it "returns properties within the default radius" do
-      properties = Property.within_selected_radius(52.5342963, 13.4236807, "sell", "apartment")
+      properties = Property.within_selected_radius(52.5342963, 13.4236807, 5000)
       puts "-------> result: #{properties.length}"
       expect(properties).to include(property1)
       expect(properties).to include(property2)

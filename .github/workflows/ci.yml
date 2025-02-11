@@ -13,9 +13,10 @@ jobs:
     runs-on: ubuntu-latest
     
     env:
-      POSTGRES_DB: ${{ secrets.PSQL_DATABASE }}
-      POSTGRES_USER: ${{ secrets.PSQL_USER }}
-      POSTGRES_PASSWORD: ${{ secrets.PSQL_PASSWORD }}
+      PSQL_DB_HOST: ${{ secrets.PSQL_DB_HOST }}
+      PSQL_DATABASE: ${{ secrets.PSQL_DATABASE }}
+      PSQL_USER: ${{ secrets.PSQL_USER }}
+      PSQL_PASSWORD: ${{ secrets.PSQL_PASSWORD }}
 
     services:
       postgres:
@@ -26,11 +27,21 @@ jobs:
           POSTGRES_PASSWORD: ${{ secrets.PSQL_PASSWORD || 'default_pass' }}
         ports:
           - 5432:5432
-        options: --health-cmd="pg_isready -U $POSTGRES_USER" --health-timeout=30s --health-retries=5
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=5s
+          --health-timeout=10s
+          --health-retries=10
 
     steps:
       - name: Check out code
         uses: actions/checkout@v4
+
+      - name: Debug Environment Variables
+        run: |
+          echo "PSQL_DATABASE=${{ secrets.PSQL_DATABASE }}"
+          echo "PSQL_USER=${{ secrets.PSQL_USER }}"
+          echo "PSQL_PASSWORD=${{ secrets.PSQL_PASSWORD }}"
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
@@ -42,21 +53,26 @@ jobs:
           gem install bundler
           bundle install
 
-      - name: Set up database
+      - name: Set up database configuration
         run: |
-          # Dynamically generate the database.yml file
-          echo "development:" > config/database.yml
-          echo "  adapter: postgresql" >> config/database.yml
-          echo "  encoding: unicode" >> config/database.yml
-          echo "  pool: 5" >> config/database.yml
-          echo "  host: postgres" >> config/database.yml
-          echo "  username: ${PSQL_USER}" >> config/database.yml
-          echo "  password: ${PSQL_PASSWORD}" >> config/database.yml
-          echo "  database: ${PSQL_DATABASE}" >> config/database.yml
+          cat > config/database.yml <<EOL
+          development:
+            adapter: postgresql
+            encoding: unicode
+            pool: 5
+            host: postgres
+            username: ${PSQL_USER}
+            password: ${PSQL_PASSWORD}
+            database: ${PSQL_DATABASE}
+          EOL
 
-      - name: Install dependencies
+      - name: Wait for PostgreSQL to be ready
         run: |
-          bundle install
+          for i in {1..30}; do
+            pg_isready -h postgres -U ${PSQL_USER} && break
+            echo "Waiting for PostgreSQL..."
+            sleep 2
+          done
 
       - name: Set up the database
         run: |
