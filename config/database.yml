@@ -20,18 +20,18 @@ default: &default
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
 
 
-# development:
-#    <<: *default
-#    database: properties_finder_development
-
 development:
-  adapter: postgresql
-  encoding: unicode
-  pool: 5
-  host: <%= ENV['PSQL_DB_HOST'] %>
-  username: <%= ENV['PSQL_USER'] %>
-  password: <%= ENV['PSQL_PASSWORD'] %>
-  database: <%= ENV['PSQL_DATABASE'] %>
+   <<: *default
+   database: properties_finder_development
+
+# development:
+#   adapter: postgresql
+#   encoding: unicode
+#   pool: 5
+#   host: <%= ENV['PSQL_DB_HOST'] %>
+#   username: <%= ENV['PSQL_USER'] %>
+#   password: <%= ENV['PSQL_PASSWORD'] %>
+#   database: <%= ENV['PSQL_DATABASE'] %>
 
 
   # The specified database role being used to connect to PostgreSQL.
