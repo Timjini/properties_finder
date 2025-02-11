@@ -33,7 +33,7 @@ RSpec.describe PropertyService, type: :service do
 
     it 'returns only properties exactly at the given location when radius is 0' do
       radius_zero_service = PropertyService.new(lng, lat, offer_type, property_type, 0)
-      
+
       property = Property.create!(
         offer_type: offer_type,
         property_type: property_type,
@@ -52,7 +52,7 @@ RSpec.describe PropertyService, type: :service do
 
     it 'does not return properties outside the given location when radius is 0' do
       radius_zero_service = PropertyService.new(lng, lat, offer_type, property_type, 0)
-      
+
       property_outside = Property.create!(
         offer_type: offer_type,
         property_type: property_type,
@@ -101,7 +101,7 @@ RSpec.describe PropertyService, type: :service do
         lat: 52.5342963,
         price: 100000
       )
-      
+
       result = service.call
       expect(result).to include(property_on_edge)
     end
@@ -145,6 +145,5 @@ RSpec.describe PropertyService, type: :service do
 
       expect(result).not_to be_empty
     end
-
   end
 end
