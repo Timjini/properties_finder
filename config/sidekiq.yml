@@ -1,4 +1,4 @@
 :concurrency: 10
 :queues:
   - default
-:url: redis://localhost:6379/0
+:url: redis://redis:6379/0

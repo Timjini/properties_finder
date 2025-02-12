@@ -75,7 +75,7 @@ Rails.application.configure do
 
   # configure Redis for caching
   config.cache_store = :redis_cache_store, {
-    url: "redis://localhost:6379/0",
+    url: "redis://redis:6379/0",
     namespace: "property_cache",
     expires_in: 1.hour
   }
