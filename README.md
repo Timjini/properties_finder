@@ -3,6 +3,10 @@
 ## Overview
 This project is a service that fetches the latitude and longitude of an object, along with its type and marketing type, and returns a list of similar objects with their prices.
 
+# Branches 
+[Scaling Branch](https://github.com/Timjini/properties_finder/tree/scaling)
+[Docker Branch](https://github.com/Timjini/properties_finder/tree/docker-repo)
+
 ## Running the Project Locally
 To run the service locally, follow these steps:
 
