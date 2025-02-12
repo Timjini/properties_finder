@@ -41,8 +41,6 @@ The project includes a Docker setup that contains the following services:
 
 To improve performance and scalability, this project integrates Redis for caching. Redis helps optimize data fetching by storing data and reducing the number of redundant database queries. This leads to faster responses and a more scalable system.
 
-Additionally, Redis is used for managing background jobs via **Sidekiq**, allowing asynchronous processing of tasks such as fetching property data or calculating prices. This reduces load on the main application server and improves overall efficiency.
-
 ### Sidekiq for Background Jobs
 
 Sidekiq is used to process background jobs asynchronously, improving scalability. For instance, tasks like fetching property details or calculating prices can be offloaded to background workers, allowing the main application to focus on handling incoming user requests.
