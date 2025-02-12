@@ -13,7 +13,7 @@ class PropertiesController < ApplicationController
       params[:property_type]
     ).call
 
-    return render_error_response("No properties found matching the criteria", :not_found) if properties.blank?
+    return render_error_response("please check the paramters!", :not_found, "No properties found matching the criteria") if properties.blank?
 
     render_success_response(data: properties, message: "Properties successfully retrieved.", status: :ok)
   end
