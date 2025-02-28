@@ -52,4 +52,6 @@ group :development, :test do
   gem "rspec-rails"
 
   gem "byebug"
+
+  gem "factory_bot_rails"
 end

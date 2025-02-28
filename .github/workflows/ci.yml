@@ -43,4 +43,3 @@
 #           echo "PSQL_DATABASE=${{ secrets.PSQL_DATABASE }}"
 #           echo "PSQL_USER=${{ secrets.PSQL_USER }}"
 #           echo "PSQL_PASSWORD=${{ secrets.PSQL_PASSWORD }}"
-
