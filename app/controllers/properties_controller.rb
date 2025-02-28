@@ -1,27 +1,17 @@
 class PropertiesController < ApplicationController
   include ApiResponseHandler
   include ApiExceptionsHandler
-
   def index
-    property = Property.new(property_params)
-    return unless validate_model(property)
-
-    properties = PropertyService.new(
-      params[:lng].to_f,
-      params[:lat].to_f,
-      params[:marketing_type],
-      params[:property_type]
-    ).call
+    properties = PropertyService.new(property_search_params).call
 
     return render_error_response("please check the paramters!", :not_found, "No properties found matching the criteria") if properties.blank?
 
     render_success_response(data: properties, message: "Properties successfully retrieved.", status: :ok)
   end
 
-
   private
 
-  def property_params
-    params.permit(:lng, :lat, :property_type, :marketing_type)
+  def property_search_params
+    params.permit(:lng, :lat, :marketing_type, :property_type, :radius)
   end
 end

@@ -1,5 +1,6 @@
 class Property < ApplicationRecord
   # require fileds on creation
+  # Alias used to match URL params
   alias_attribute :marketing_type, :offer_type
 
   # validate query fields

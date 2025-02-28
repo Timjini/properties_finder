@@ -2,12 +2,14 @@
 -- using FastJson
 -- running select and where before calculating the radius
 -- creating an index for offer_type, property_type, lat, lng
-   : CREATE INDEX idx_properties_offer_type_property_type_lat_lng ON properties (offer_type, property_type, lat, lng);
+  > CREATE INDEX idx_properties_offer_type_property_type_lat_lng ON properties (offer_type, property_type, lat, lng);
+  > rails generate migration AddIndexToPropertiesOnOfferTypeAndPropertyTypeAndLatLng
+
 
 optional
 -- using Rails cache for 10mins 
 
-
+=--------------------------------------------------------------------------
 - SQL query 
 
 SELECT id,street, house_number, city, zip_code, price,lat,lng
@@ -18,3 +20,80 @@ WHERE offer_type = ?
         ll_to_earth(lat::double precision, lng::double precision),
         ll_to_earth(?::double precision, ?::double precision)
       ) <= ?
+---------------------------------------------------------------------------
+
+--check index
+ActiveRecord::Base.connection.indexes(:properties)
+
+--use earthbox 
+
+scope :within_selected_radius, ->(lat, lng, radius) {
+  where(
+    "earth_box(
+      ll_to_earth(?::double precision, ?::double precision), ?
+    ) @> ll_to_earth(lat::double precision, lng::double precision)
+    AND earth_distance(
+      ll_to_earth(lat::double precision, lng::double precision),
+      ll_to_earth(?::double precision, ?::double precision)
+    ) <= ?", lat, lng, radius, lat, lng, radius
+  )
+}
+
+----------------------------------------------------------------------------
+
+dealing with lat,lng inaccuracy 
+1- add Threshold
+
+scope :within_selected_radius, ->(lat, lng, radius, threshold = 50) {
+  where(
+    "earth_distance(
+      ll_to_earth(lat::double precision, lng::double precision),
+      ll_to_earth(?::double precision, ?::double precision)
+    ) <= ?", lat, lng, radius + threshold
+  )
+}
+
+2- reduce lat, lng noise 
+
+rounded_lat = lat.round(5)
+rounded_lng = lng.round(5)
+
+scope :within_selected_radius, ->(lat, lng, radius) {
+  where(
+    "earth_distance(
+      ll_to_earth(lat::double precision, lng::double precision),
+      ll_to_earth(?::double precision, ?::double precision)
+    ) <= ?", rounded_lat, rounded_lng, radius
+  )
+}
+
+3- using Geocoder gem
+
+scope :within_selected_radius, ->(lat, lng, radius) {
+  near([lat, lng], radius, units: :km)
+}
+
+----------------------------------------------------------------------------
+Alternative options : 
+-using PostGIS to add geographic objects (Fast, scalable)
+
+class AddGeographyToProperties < ActiveRecord::Migration[6.0]
+  def change
+    add_column :properties, :location, :geography, geographic: true
+    add_index :properties, :location, using: :gist
+  end
+end
+
+Property.find_each do |property|
+  property.update(location: "POINT(#{property.longitude} #{property.latitude})")
+end
+
+
+scope :within_section, ->(bounding_box) {
+  where("ST_Within(location, ST_MakeEnvelope(?, ?, ?, ?, 4326))", 
+        bounding_box[:min_lng], bounding_box[:min_lat], 
+        bounding_box[:max_lng], bounding_box[:max_lat])
+}
+
+- Since all data is same city Berlin, it would be easy to divide the location
+by zipcode and use googleApi or OpenStreet
