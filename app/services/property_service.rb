@@ -1,34 +1,21 @@
 class PropertyService
-  def initialize(lng, lat, offer_type, property_type, radius = 5000)
-    @lng = lng.to_f
-    @lat = lat.to_f
-    @offer_type = offer_type.to_s
-    @property_type = property_type.to_s
-    @radius = radius.to_i
+  include Caching::Cacheable
+  include Caching::CacheKeyGenerator
+
+  def initialize(params)
+    @search = PropertySearch.new(params)
   end
 
-  # caching for scaling
   def call
-    cache_key = generate_cache_key
-    cache_data = Redis.current.get(cache_key)
+    return [] unless @search.valid?
 
-    if cache_data
-      JSON.parse(cache_data, symbolize_names: true)
-    else
-      properties = fetch_properties_from_db.as_json
-      Redis.current.setex(cache_key, 1.hour, properties.to_json)
-      properties
-    end
+    fetch_from_cache(generate_cache_key(@search.marketing_type, @search.property_type, @search.lat, @search.lng, @search.radius)) { fetch_properties_from_db.as_json }
   end
 
   private
 
-  def generate_cache_key
-    Digest::SHA256.hexdigest("#{@offer_type}/#{@property_type}/#{@lat}/#{@lng}/#{@radius}")
-  end
-
   def fetch_properties_from_db
-    Property.where(offer_type: @offer_type, property_type: @property_type)
-            .within_selected_radius(@lat, @lng, @radius)
+    Property.where(offer_type: @search.marketing_type, property_type: @search.property_type)
+            .within_selected_radius(@search.lat, @search.lng, @search.radius)
   end
 end
